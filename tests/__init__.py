@@ -6,4 +6,4 @@ from .base import escape
 from .base import interactive_program
 
 from .hello import run_tests
-# from .bash_intro import run_tests
+from .bash_intro import run_tests
