@@ -38,6 +38,12 @@ def escape(s: str) -> str:
 			e += c
 	return e
 
+def contains_only_chars_from(text: str, allowed_chars: str) -> bool:
+	for char in text:
+		if char not in allowed_chars:
+			return False
+	return True
+
 def check_fail(results: subprocess.CompletedProcess[str], file_output: str):
 	# CASE: Stderr should not be empty.
 	if results.stderr == '':

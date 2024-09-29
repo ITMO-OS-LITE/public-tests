@@ -36,6 +36,8 @@ def __test2():
 				selected_alphabet += string.digits
 				selected_alphabet += string.punctuation
 			generated_string = ''.join(random.choice(selected_alphabet) for _ in range(random.randint(10, 100)))
+			if not only_letters:
+				only_letters = tests.base.contains_only_chars_from(generated_string, string.ascii_letters)
 			escaped_string = ""
 			for c in generated_string:
 				if c == '`':
