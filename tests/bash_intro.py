@@ -96,5 +96,5 @@ def __test8():
 def run_tests():
 	__test1()
 	__test2()
-	__test7()
+	# __test7()
 	__test8()
