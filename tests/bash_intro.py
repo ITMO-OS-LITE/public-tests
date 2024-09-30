@@ -51,21 +51,18 @@ def __test2():
 	print('   ... OK')
 
 def __test7_solution() -> Set[str]:
-	email_pattern = r"^\S+@\S+\.\S+$"
+	email_pattern = r"[a-zA-Z.+-]+@[a-zA-Z-]+\.[a-zA-Z.-]+"
 	emails = set()
-	for file in os.listdir('/etc'):
-		p = os.path.join('/etc', file)
-		if not os.path.isfile(p):
-			continue
-		try:
-			f = open(p, 'r')
-			s = f.read()
-			for e in re.findall(email_pattern, s):
-				emails.add(e)
-		except PermissionError as _:
-			print("     Skipping \"%s\" as no permissions." % (p))
-		except UnicodeDecodeError as _:
-			print("     Skipping \"%s\" as unicode decoding error." % (p))
+	for root, _, files in os.walk('/etc'):
+		for file in files:
+			p = os.path.join(root, file)
+			try:
+				f = open(p, 'r')
+				s = f.read()
+				for e in re.findall(email_pattern, s):
+					emails.add(e)
+			except Exception as _:
+				pass
 	return emails
 
 def __test7():
