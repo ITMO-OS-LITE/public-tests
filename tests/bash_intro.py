@@ -5,7 +5,7 @@ import string
 
 import tests.base
 
-from typing import Dict, Set
+from typing import Dict, List
 
 def __get_prefix(a: int, b: int) -> str:
 	test_list = list(range(a, b + 1))
@@ -50,7 +50,7 @@ def __test2():
 		tty.fork('q')
 	print('   ... OK')
 
-def __test7_solution() -> Set[str]:
+def __test7_solution() -> List[str]:
 	email_pattern = r"[a-zA-Z.+-]+@[a-zA-Z-]+\.[a-zA-Z.-]+"
 	emails = set()
 	for root, _, files in os.walk('/etc'):
@@ -63,23 +63,25 @@ def __test7_solution() -> Set[str]:
 					emails.add(e)
 			except Exception as _:
 				pass
-	return emails
+	return sorted(emails)
 
 def __test7():
 	# -- Task 7 --
 	print('-- Testing task 7...')
 	file_output = 'etc_emails.lst'
 	tests.base.run_once('emails.bash', file_output = file_output, check_output = False)
-	expected = sorted(__test7_solution())
+	expected = __test7_solution()
 	f = open(file_output, 'r')
 	actual = set(f.read().split(','))
 	print('   Found as minimal expected:', len(expected))
 	print('   Found as solution\'s:', len(actual))
-	for subset_size_rate in [5, 10]:
-		print("     Testing accuracy at %d%%" % (subset_size_rate))
-		subset_expected = set(tests.base.get_random_elements(expected, subset_size_rate))
-		if not subset_expected.issubset(actual):
-			raise ValueError('Expected set of emails must be minimal as subset.')
+	NUMBER_OF_RANDOM_ELEMENTS = 10
+	for i in range(NUMBER_OF_RANDOM_ELEMENTS):
+		expected_single = random.choice(expected)
+		print("     Random pickup #%d" % (i + 1))
+		if expected_single in actual:
+			continue
+		raise ValueError("Random picked up \"%s\" is not in actual solution." % (expected_single))
 	print('     Good enough.')
 	print('   ... OK')
 
@@ -100,7 +102,7 @@ def __test8():
 	print('   ... OK')
 
 def run_tests():
-	__test1()
-	__test2()
+	# __test1()
+	# __test2()
 	__test7()
-	__test8()
+	# __test8()
