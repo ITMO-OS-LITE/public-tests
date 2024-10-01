@@ -102,7 +102,7 @@ def __test8():
 	print('   ... OK')
 
 def run_tests():
-	# __test1()
-	# __test2()
+	__test1()
+	__test2()
 	__test7()
-	# __test8()
+	__test8()
