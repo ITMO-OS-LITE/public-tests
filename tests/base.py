@@ -1,5 +1,6 @@
 import os
 import subprocess
+import random
 
 from typing import Iterable, List, Union
 
@@ -43,6 +44,10 @@ def contains_only_chars_from(text: str, allowed_chars: str) -> bool:
 		if char not in allowed_chars:
 			return False
 	return True
+
+def get_random_elements(container: Iterable, percent: int) -> Iterable:
+	n = int((percent / 100) * len(container))
+	return random.sample(container, n)
 
 def check_fail(results: subprocess.CompletedProcess[str], file_output: str):
 	# CASE: Stderr should not be empty.

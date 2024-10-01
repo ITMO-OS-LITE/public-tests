@@ -70,11 +70,15 @@ def __test7():
 	print('-- Testing task 7...')
 	file_output = 'etc_emails.lst'
 	tests.base.run_once('emails.bash', file_output = file_output, check_output = False)
-	expected = __test7_solution()
+	expected = sorted(__test7_solution())
 	f = open(file_output, 'r')
-	actual = f.read().split(',')
-	if not expected.issubset(actual):
-		raise ValueError('Expected set of emails must be minimal as subset.')
+	actual = set(f.read().split(','))
+	for subset_size_rate in [5, 10, 15, 20, 30]:
+		print("     Testing accuracy at %d%%" % (subset_size_rate))
+		subset_expected = set(tests.base.get_random_elements(expected, subset_size_rate))
+		if not subset_expected.issubset(actual):
+			raise ValueError('Expected set of emails must be minimal as subset.')
+	print('     Good enough.')
 	print('   ... OK')
 
 def __test8_solution() -> str:
@@ -96,5 +100,5 @@ def __test8():
 def run_tests():
 	__test1()
 	__test2()
-	# __test7()
+	__test7()
 	__test8()
