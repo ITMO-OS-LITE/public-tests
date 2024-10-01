@@ -50,10 +50,19 @@ def __test2():
 		tty.fork('q')
 	print('   ... OK')
 
+def __walk_with_level(some_dir: str, level: int = 1):
+	some_dir = some_dir.rstrip(os.path.sep)
+	num_sep = some_dir.count(os.path.sep)
+	for root, dirs, files in os.walk(some_dir):
+		yield root, files
+		num_sep_this = root.count(os.path.sep)
+		if num_sep + level <= num_sep_this:
+			del dirs[:]
+
 def __test7_solution() -> List[str]:
 	email_pattern = r"[a-zA-Z.+-]+@[a-zA-Z-]+\.[a-zA-Z.-]+"
 	emails = set()
-	for root, _, files in os.walk('/etc'):
+	for root, files in __walk_with_level('/etc', 5):
 		for file in files:
 			p = os.path.join(root, file)
 			try:
