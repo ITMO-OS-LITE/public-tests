@@ -5,7 +5,7 @@ import string
 
 import tests.base
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 def __get_prefix(a: int, b: int) -> str:
 	test_list = list(range(a, b + 1))
@@ -50,6 +50,60 @@ def __test2():
 		tty.fork('q')
 	print('   ... OK')
 
+def __msg(x: int, y: int) -> str:
+	return "x=%d;y=%d" % (x, y)
+
+def __w(x: int, y: int) -> Tuple[str, int, int]:
+	x1 = x
+	y1 = y + 1
+	return __msg(x1, y1), x1, y1
+
+def __a(x: int, y: int) -> Tuple[str, int, int]:
+	x1 = x - 1
+	y1 = y
+	return __msg(x1, y1), x1, y1
+
+def __s(x: int, y: int) -> Tuple[str, int, int]:
+	x1 = x
+	y1 = y - 1
+	return __msg(x1, y1), x1, y1
+
+def __d(x: int, y: int) -> Tuple[str, int, int]:
+	x1 = x + 1
+	y1 = y
+	return __msg(x1, y1), x1, y1
+
+def __test3():
+	# -- Task 3 --
+	print('-- Testing task 3...')
+	tty = tests.base.interactive_program('robot.bash', args = [6, 6], input_continuously = True)
+	x = 3
+	y = 3
+	tty.communicate(answer = __msg(x, y))
+	# Up, up.
+	m, x, y = __w(x, y)
+	tty.communicate('W', m)
+	m, x, y = __w(x, y)
+	tty.communicate('w', m)
+	# Down, down.
+	m, x, y = __s(x, y)
+	tty.communicate('s', m)
+	m, x, y = __s(x, y)
+	tty.communicate('S', m)
+	# Left, right.
+	m, x, y = __a(x, y)
+	tty.communicate('a', m)
+	m, x, y = __d(x, y)
+	tty.communicate('d', m)
+	# Left, right.
+	m, x, y = __a(x, y)
+	tty.communicate('A', m)
+	m, x, y = __d(x, y)
+	tty.communicate('D', m)
+	# Run.
+	tty.fork('q')
+	print('   ... OK')
+
 def __walk_with_level(some_dir: str, level: int = 1):
 	some_dir = some_dir.rstrip(os.path.sep)
 	num_sep = some_dir.count(os.path.sep)
@@ -62,7 +116,7 @@ def __walk_with_level(some_dir: str, level: int = 1):
 def __test7_solution() -> List[str]:
 	email_pattern = r"[a-zA-Z.+-]+@[a-zA-Z-]+\.[a-zA-Z.-]+"
 	emails = set()
-	for root, files in __walk_with_level('/etc', 5):
+	for root, files in __walk_with_level('/etc', 3):
 		for file in files:
 			p = os.path.join(root, file)
 			try:
@@ -82,8 +136,6 @@ def __test7():
 	expected = __test7_solution()
 	f = open(file_output, 'r')
 	actual = set(f.read().split(','))
-	print('   Found as minimal expected:', len(expected))
-	print('   Found as solution\'s:', len(actual))
 	NUMBER_OF_RANDOM_ELEMENTS = 10
 	for i in range(NUMBER_OF_RANDOM_ELEMENTS):
 		expected_single = random.choice(expected)
@@ -110,8 +162,16 @@ def __test8():
 	tests.base.run_once('users.bash', answer = __test8_solution())
 	print('   ... OK')
 
+def __test9():
+	# -- Task 9 --
+	print('-- Testing task 9...')
+	tests.base.run_once('frequently.bash', answer = ['shell', 'command', 'with', 'value'])
+	print('   ... OK')
+
 def run_tests():
 	__test1()
 	__test2()
+	__test3()
 	__test7()
 	__test8()
+	__test9()

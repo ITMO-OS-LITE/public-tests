@@ -2,7 +2,7 @@ import os
 import subprocess
 import random
 
-from typing import Iterable, List, Union
+from typing import List, Union, Iterable
 
 SOURCE_DIR = 'src'
 
@@ -66,10 +66,10 @@ def check_fail(results: subprocess.CompletedProcess[str], file_output: str):
 	if os.path.exists(file_output):
 		raise ValueError('On failure, output file should not be created.')
 
-def check_pass(results: subprocess.CompletedProcess[str], answer: str, file_output: str, check_output: bool):
+def check_pass(results: subprocess.CompletedProcess[str], answer: Union[str, Iterable[str]], answer_sep: str, file_output: str, check_output: bool):
 	actual: str = None
 
-	if not answer.endswith('\n'):
+	if isinstance(answer, str) and not answer.endswith('\n'):
 		answer += '\n'
 
 	# CASE: If it's file output, then file should be created.
@@ -83,11 +83,18 @@ def check_pass(results: subprocess.CompletedProcess[str], answer: str, file_outp
 	if file_output is None:
 		actual = results.stdout
 
-	# CASE: Assertion.
-	if check_output and actual != answer:
+	# CASE: Assertion 1.
+	if isinstance(answer, str) and check_output and actual != answer:
 		raise ValueError("Expected \"%s\", but actual is \"%s\"." % (escape(answer), escape(actual)))
 
-def run_once(prog: str, args: list = [], answer: str = "", exitcode: int = 0, file_output: str = None, check_output: bool = True):
+	# CASE: Assertion 2.
+	if isinstance(answer, list):
+		actual_set = set(actual.strip().split(answer_sep))
+		expected_set = set(answer)
+		if not actual_set.issubset(expected_set):
+			raise ValueError("Expected at least some of \"%s\", but actual is \"%s\"." % (str(expected_set), str(actual_set)))
+
+def run_once(prog: str, args: list = [], answer: Union[str, Iterable[str]] = "", answer_sep: str = '\n', exitcode: int = 0, file_output: str = None, check_output: bool = True):
 	argv = args_to_strs(args)
 	executable = verify_file(prog)
 
@@ -100,7 +107,7 @@ def run_once(prog: str, args: list = [], answer: str = "", exitcode: int = 0, fi
 	# If exitcode is 0, then it's SUCCESS state, check as passing.
 	# Otherwise, check as failure.
 	if exitcode == 0:
-		check_pass(results, answer, file_output, check_output)
+		check_pass(results, answer, answer_sep, file_output, check_output)
 	else:
 		check_fail(results, file_output)
 
@@ -118,7 +125,7 @@ class interactive_program:
 			self.__input += self.__separator
 		if answer != '':
 			self.__answer += str(answer)
-			self.__answer += self.__separator
+			self.__answer += '\n'
 
 	def fork(self, last_input: str = '', last_answer: str = '', exitcode: int = 0):
 		self.communicate(last_input, last_answer)
@@ -135,6 +142,6 @@ class interactive_program:
 		# If exitcode is 0, then it's SUCCESS state, check as passing.
 		# Otherwise, check as failure.
 		if exitcode == 0:
-			check_pass(results, self.__answer, None, True)
+			check_pass(results, self.__answer, None, None, True)
 		else:
 			check_fail(results, None)
